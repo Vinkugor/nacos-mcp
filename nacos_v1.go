@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -16,9 +17,15 @@ import (
 )
 
 // nacosClientV1 wraps nacos-sdk-go v1 (HTTP, compatible with Nacos Server 1.x).
+//
+// v1 SDK has no DisableUseSnapShot switch: on a server error it silently falls
+// back to a file under configCacheDir. We purge that file before every read so
+// a stale value can never surface, matching v2's disable-snapshot behavior.
 type nacosClientV1 struct {
-	client   v1configclient.IConfigClient
-	readOnly bool
+	client         v1configclient.IConfigClient
+	readOnly       bool
+	namespace      string
+	configCacheDir string
 }
 
 func newNacosClientV1(config *NacosConfig) (*nacosClientV1, error) {
@@ -38,6 +45,7 @@ func newNacosClientV1(config *NacosConfig) (*nacosClientV1, error) {
 	}
 
 	runtimeDir := filepath.Join(os.TempDir(), "nacos-mcp")
+	cacheDir := filepath.Join(runtimeDir, "cache")
 	cc := *v1constant.NewClientConfig(
 		v1constant.WithNamespaceId(config.Namespace),
 		v1constant.WithUsername(config.Username),
@@ -45,7 +53,7 @@ func newNacosClientV1(config *NacosConfig) (*nacosClientV1, error) {
 		v1constant.WithTimeoutMs(10000),
 		v1constant.WithNotLoadCacheAtStart(true),
 		v1constant.WithLogDir(filepath.Join(runtimeDir, "log")),
-		v1constant.WithCacheDir(filepath.Join(runtimeDir, "cache")),
+		v1constant.WithCacheDir(cacheDir),
 		v1constant.WithLogLevel("warn"),
 	)
 
@@ -57,12 +65,29 @@ func newNacosClientV1(config *NacosConfig) (*nacosClientV1, error) {
 		return nil, fmt.Errorf("failed to create nacos v1 config client: %w", err)
 	}
 
-	return &nacosClientV1{client: client, readOnly: config.ReadOnly}, nil
+	return &nacosClientV1{
+		client:         client,
+		readOnly:       config.ReadOnly,
+		namespace:      config.Namespace,
+		configCacheDir: filepath.Join(cacheDir, "config"),
+	}, nil
 }
 
 func (nc *nacosClientV1) IsReadOnly() bool { return nc.readOnly }
 
+// purgeCacheFile deletes the on-disk snapshot the v1 SDK would otherwise fall
+// back to on a server error. Must mirror the SDK's cache-key and filename
+// conventions (see util.GetConfigCacheKey and cache.GetFileName).
+func (nc *nacosClientV1) purgeCacheFile(dataId, group string) {
+	cacheKey := dataId + "@@" + group + "@@" + nc.namespace
+	if runtime.GOOS == "windows" {
+		cacheKey = strings.ReplaceAll(cacheKey, ":", "&&")
+	}
+	_ = os.Remove(filepath.Join(nc.configCacheDir, cacheKey))
+}
+
 func (nc *nacosClientV1) GetConfig(dataId, group string) (string, error) {
+	nc.purgeCacheFile(dataId, group)
 	content, err := nc.client.GetConfig(v1vo.ConfigParam{
 		DataId: dataId,
 		Group:  group,
