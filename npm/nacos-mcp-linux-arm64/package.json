@@ -1,0 +1,21 @@
+{
+  "name": "@vinkugor/nacos-mcp-linux-arm64",
+  "version": "0.0.1-next",
+  "description": "linux/arm64 binary for @vinkugor/nacos-mcp",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "preferUnplugged": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vinkugor/nacos-mcp"
+  }
+}

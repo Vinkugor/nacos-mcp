@@ -1,0 +1,43 @@
+{
+  "name": "@vinkugor/nacos-mcp",
+  "version": "0.0.1-next",
+  "description": "Nacos MCP Server - AI assistant access to Nacos configuration",
+  "bin": {
+    "nacos-mcp": "bin/nacos-mcp.js"
+  },
+  "optionalDependencies": {
+    "@vinkugor/nacos-mcp-darwin-arm64": "0.0.1-next",
+    "@vinkugor/nacos-mcp-darwin-amd64": "0.0.1-next",
+    "@vinkugor/nacos-mcp-linux-arm64": "0.0.1-next",
+    "@vinkugor/nacos-mcp-linux-amd64": "0.0.1-next",
+    "@vinkugor/nacos-mcp-win32-amd64": "0.0.1-next",
+    "@vinkugor/nacos-mcp-win32-arm64": "0.0.1-next"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vinkugor/nacos-mcp"
+  },
+  "homepage": "https://github.com/Vinkugor/nacos-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/Vinkugor/nacos-mcp/issues"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "nacos",
+    "mcp",
+    "model-context-protocol",
+    "configuration",
+    "ai"
+  ]
+}

@@ -1,0 +1,30 @@
+
+# Go build cache
+*.test
+*.out
+
+# Build artifacts
+/nacos-mcp
+/nacos-mcp-*
+/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/
+
+# AI working docs (plans, specs) — keep local only
+docs/
+
+# Compiled shim binaries injected by publish-npm.sh (tracked only as .gitkeep)
+npm/*/bin/nacos-mcp
+npm/*/bin/nacos-mcp.exe
