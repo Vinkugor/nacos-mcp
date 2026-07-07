@@ -34,7 +34,7 @@ func newNacosClientV2(config *NacosConfig) (*nacosClientV2, error) {
 	}
 
 	sc := []constant.ServerConfig{
-		*constant.NewServerConfig(host, port, constant.WithContextPath("/nacos")),
+		*constant.NewServerConfig(host, port, constant.WithContextPath(config.ContextPath)),
 	}
 
 	runtimeDir := filepath.Join(os.TempDir(), "nacos-mcp")

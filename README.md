@@ -40,7 +40,7 @@ Nacos 配置中心的 MCP (Model Context Protocol) Server，让 AI 助手能够�
       "args": ["-y", "@vinkugor/nacos-mcp"],
       "env": {
         "NACOS_HOST": "localhost:8848",
-        "NACOS_NAMESPACE": "your-namespace-id",
+        "NACOS_NAMESPACE": "your-namespace",
         "NACOS_USERNAME": "nacos",
         "NACOS_PASSWORD": "nacos"
       }
@@ -66,7 +66,7 @@ go install github.com/Vinkugor/nacos-mcp@latest
       "command": "nacos-mcp",
       "env": {
         "NACOS_HOST": "localhost:8848",
-        "NACOS_NAMESPACE": "your-namespace-id",
+        "NACOS_NAMESPACE": "your-namespace",
         "NACOS_USERNAME": "nacos",
         "NACOS_PASSWORD": "nacos"
       }
@@ -86,7 +86,7 @@ go install github.com/Vinkugor/nacos-mcp@latest
       "command": "/usr/local/bin/nacos-mcp",
       "env": {
         "NACOS_HOST": "localhost:8848",
-        "NACOS_NAMESPACE": "your-namespace-id",
+        "NACOS_NAMESPACE": "your-namespace",
         "NACOS_USERNAME": "nacos",
         "NACOS_PASSWORD": "nacos"
       }
@@ -99,18 +99,33 @@ go install github.com/Vinkugor/nacos-mcp@latest
 
 ## 环境变量
 
+### 必填配置
+
+| 变量 | 说明 | 示例 |
+| ---- | ---- | ---- |
+| `NACOS_HOST` | Nacos 服务地址 | `localhost:8848` |
+| `NACOS_USERNAME` | 登录用户名 | `nacos` |
+| `NACOS_PASSWORD` | 登录密码 | `nacos` |
+
+### 可选配置
+
 | 变量 | 说明 | 默认值 |
 | ---- | ---- | ------ |
-| `NACOS_HOST` | Nacos 服务地址（host:port） | `localhost:8848` |
-| `NACOS_NAMESPACE` | Nacos 命名空间 ID | 空（public） |
-| `NACOS_USERNAME` | Nacos 用户名 | `nacos` |
-| `NACOS_PASSWORD` | Nacos 密码 | `nacos` |
-| `NACOS_SDK_VERSION` | SDK 主版本。`v2`（默认）走 gRPC，支持 Nacos Server v2 / v3；`v1` 走 HTTP，仅支持 Nacos Server v1 | `v2` |
-| `NACOS_READONLY` | 只读模式：为 `true` 时不注册 `publish_config` 和 `update_config` 工具，禁止发布与修改配置 | `false` |
+| `NACOS_NAMESPACE` | 命名空间名称或 UUID（留空为 public） | 空 |
+| `NACOS_CONTEXT_PATH` | API 路径前缀（自定义部署时修改） | `/nacos` |
+| `NACOS_SDK_VERSION` | SDK 版本（`v2` 适配 Nacos Server v2/v3，`v1` 适配 v1） | `v2` |
+| `NACOS_READONLY` | 只读模式（设为 `true` 时禁用发布和修改功能） | `false` |
 
-> 生产环境请务必修改默认用户名/密码。使用默认凭证启动时会在 stderr 输出 WARNING。
->
-> 本服务**禁用**了本地快照/缓存 fallback，所有读操作都直连 Nacos Server，避免在服务端不可达时返回陈旧配置（v2 通过 `DisableUseSnapShot` 开关实现；v1 SDK 无此开关，改为每次读取前清除对应缓存文件）。
+### 配置说明
+
+**命名空间识别**  
+`NACOS_NAMESPACE` 可以填写命名空间的显示名称（如 `dev-env`）或 UUID（如 `cff9f83d-...`）。服务启动时会自动将显示名称转换为 UUID，转换失败时会输出警告但不影响启动。
+
+**安全建议**  
+生产环境请修改默认用户名和密码。使用默认凭证启动时会输出安全警告。
+
+**实时性保证**  
+本服务禁用了本地快照缓存，所有配置读取都直连 Nacos Server，确保获取最新配置而非陈旧缓存。
 
 ---
 

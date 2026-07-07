@@ -24,12 +24,13 @@ func main() {
 	}
 
 	config := &NacosConfig{
-		ServerAddr: getEnv("NACOS_HOST", "localhost:8848"),
-		Namespace:  getEnv("NACOS_NAMESPACE", ""),
-		Username:   getEnv("NACOS_USERNAME", defaultNacosUsername),
-		Password:   getEnv("NACOS_PASSWORD", defaultNacosPassword),
-		ReadOnly:   getEnvBool("NACOS_READONLY", false),
-		SDKVersion: SDKVersion(getEnv("NACOS_SDK_VERSION", string(SDKVersionV2))),
+		ServerAddr:  getEnv("NACOS_HOST", "localhost:8848"),
+		Namespace:   getEnv("NACOS_NAMESPACE", ""),
+		Username:    getEnv("NACOS_USERNAME", defaultNacosUsername),
+		Password:    getEnv("NACOS_PASSWORD", defaultNacosPassword),
+		ContextPath: getEnv("NACOS_CONTEXT_PATH", "/nacos"),
+		ReadOnly:    getEnvBool("NACOS_READONLY", false),
+		SDKVersion:  SDKVersion(getEnv("NACOS_SDK_VERSION", string(SDKVersionV2))),
 	}
 
 	if config.Username == defaultNacosUsername && config.Password == defaultNacosPassword {
@@ -52,6 +53,7 @@ func main() {
 	log.Printf("Nacos MCP server %s running on stdio", version)
 	log.Printf("Connected to: %s", config.ServerAddr)
 	log.Printf("Namespace: %s", config.Namespace)
+	log.Printf("Context path: %s", config.ContextPath)
 	log.Printf("Read-only mode: %v", config.ReadOnly)
 	log.Printf("Nacos SDK version: %s", config.SDKVersion)
 
